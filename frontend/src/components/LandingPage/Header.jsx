@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
 import { styled } from '@mui/system';
+import { Link } from 'react-router-dom';
 
 const StyledAppBar = styled(AppBar)({
     backgroundColor: '#ffffff',
@@ -44,13 +45,13 @@ const Header = () => {
         <StyledAppBar position="static">
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
-                    <Logo variant="h6">TeamFlow</Logo>
+                    <Logo variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: '#2E7D32' }}>TeamFlow</Logo>
                     <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                         <NavButton>Features</NavButton>
                         <NavButton>Pricing</NavButton>
                         <NavButton>Customers</NavButton>
-                        <NavButton>Login</NavButton>
-                        <SignUpButton variant="contained">Sign Up</SignUpButton>
+                        <NavButton component={Link} to="/login">Login</NavButton>
+                        <SignUpButton variant="contained" component={Link} to="/signup">Sign Up</SignUpButton>
                     </Box>
                 </Toolbar>
             </Container>

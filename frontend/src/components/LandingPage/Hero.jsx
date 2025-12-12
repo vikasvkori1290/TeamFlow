@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Container, Grid } from '@mui/material';
 import { styled } from '@mui/system';
+import { Link } from 'react-router-dom';
 
 const HeroSection = styled(Box)({
     padding: '80px 0',
@@ -48,7 +49,7 @@ const Hero = () => {
                         <HeroSubtitle>
                             Plan, collaborate, organize and deliver projects of all sizes, on time, using one project planning software with all the right tools put in one place.
                         </HeroSubtitle>
-                        <CTAButton variant="contained" size="large">
+                        <CTAButton variant="contained" size="large" component={Link} to="/signup">
                             Get Started for Free
                         </CTAButton>
                     </Grid>

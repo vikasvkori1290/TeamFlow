@@ -1,9 +1,10 @@
 import React from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import Header from './components/LandingPage/Header';
-import Hero from './components/LandingPage/Hero';
-import Features from './components/LandingPage/Features';
-import Footer from './components/LandingPage/Footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 const theme = createTheme({
   typography: {
@@ -42,10 +43,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Header />
-      <Hero />
-      <Features />
-      <Footer />
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }
