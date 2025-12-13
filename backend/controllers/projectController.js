@@ -18,6 +18,38 @@ const getProjects = async (req, res) => {
     }
 };
 
+
+
+// @desc    Get single project
+// @route   GET /api/projects/:id
+// @access  Private
+const getProject = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id)
+            .populate('manager', 'name email avatar')
+            .populate('members', 'name email avatar');
+
+        if (!project) {
+            res.status(404);
+            throw new Error('Project not found');
+        }
+
+        // Authorization: Check if user is manager or member or creator
+        if (
+            project.manager._id.toString() !== req.user.id &&
+            !project.members.some(m => m._id.toString() === req.user.id) &&
+            project.createdBy?.toString() !== req.user.id
+        ) {
+            res.status(401);
+            throw new Error('Not authorized to view this project');
+        }
+
+        res.status(200).json(project);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
 // @desc    Create new project
 // @route   POST /api/projects
 // @access  Private
