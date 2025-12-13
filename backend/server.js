@@ -14,6 +14,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/tasks', require('./routes/taskRoutes'));
+app.use('/api/invitations', require('./routes/invitationRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.get('/', (req, res) => {
   res.send('TeamFlow API is running');

@@ -65,6 +65,18 @@ const loginUser = async (req, res) => {
     }
 };
 
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password');
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -75,4 +87,5 @@ const generateToken = (id) => {
 module.exports = {
     registerUser,
     loginUser,
+    getAllUsers,
 };
