@@ -138,11 +138,10 @@ const Header = () => {
                     </Link>
 
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-                        <NavButton onClick={() => navigate('/')}>Home</NavButton>
-                        <NavButton>Features</NavButton>
-                        <NavButton>Pricing</NavButton>
+                        {/* Removed Home, Features, Pricing links per request */}
                         {user ? (
                             <>
+                                <NavButton onClick={() => navigate('/task')}>Tasks</NavButton>
                                 <NavButton onClick={() => navigate('/projects/board')}>Projects</NavButton>
 
                                 <IconButton onClick={handleNotifOpen} sx={{ ml: 2, color: '#B0B3C7' }}>

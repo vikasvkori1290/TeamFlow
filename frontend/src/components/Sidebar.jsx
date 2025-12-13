@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { Home, AddCircle, Folder, Settings, Logout } from '@mui/icons-material';
+import { Home, AddCircle, Folder, Settings, Logout, Assignment } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CreateProjectModal from './CreateProjectModal';
 
@@ -14,7 +14,7 @@ const Sidebar = () => {
     };
 
     const menuItems = [
-        { text: 'Home', icon: <Home />, path: '/dashboard' }, // Keeping standard Dashboard as Home logic or Widget view
+        // Keeping standard Dashboard as Home logic or Widget view
         // User asked to "change the name of dashboard to create project". 
         // Assuming they mean the sidebar item that WAS "Dashboard" (which was the widgets view).
         // Since "Home" usually is the Dashboard, I will map "Create Project" to the Modal or Action.
@@ -24,6 +24,22 @@ const Sidebar = () => {
         { text: 'Your Projects', icon: <Folder />, path: '/projects/board' },
         { text: 'Manage Project', icon: <Settings />, path: '/projects/list' },
     ];
+
+    // Context-aware menu items logic
+    const isTaskSection = location.pathname.startsWith('/task');
+
+    const projectItems = [
+        { text: 'Your Projects', icon: <Folder />, path: '/projects/board' },
+        { text: 'Manage Project', icon: <Settings />, path: '/projects/list' },
+    ];
+
+    const taskItems = [
+        { text: 'Assign Task', icon: <AddCircle />, path: '/task/assign' },
+        { text: 'Review Task', icon: <Assignment />, path: '/task/complete' },
+        { text: 'View Task', icon: <Folder />, path: '/task/view' },
+    ];
+
+    const currentMenuItems = isTaskSection ? taskItems : projectItems;
 
     return (
         <Box sx={{ width: 260, height: '100vh', display: 'flex', flexDirection: 'column', p: 2 }}>
@@ -37,25 +53,48 @@ const Sidebar = () => {
 
             {/* Navigation */}
             <List sx={{ flexGrow: 1 }}>
-                {/* Special Create Project Item */}
+
+                {/* Home (Landing Page) */}
                 <ListItem disablePadding sx={{ mb: 1 }}>
                     <ListItemButton
-                        onClick={handleCreateClick}
+                        onClick={() => navigate('/')} // Navigate to Landing Page
                         sx={{
                             borderRadius: 2,
-                            color: '#00E5FF',
-                            bgcolor: 'rgba(0, 229, 255, 0.1)',
+                            color: '#B0B3C7',
                             '&:hover': {
-                                bgcolor: 'rgba(0, 229, 255, 0.2)',
+                                bgcolor: 'rgba(255, 255, 255, 0.05)',
+                                color: '#fff',
                             },
                         }}
                     >
-                        <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}><AddCircle /></ListItemIcon>
-                        <ListItemText primary="Create Project" primaryTypographyProps={{ fontWeight: 600 }} />
+                        <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}><Home /></ListItemIcon>
+                        <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 500 }} />
                     </ListItemButton>
                 </ListItem>
 
-                {menuItems.map((item) => (
+                {/* Create Project Item - Only show if NOT in task section */}
+                {!isTaskSection && (
+                    <ListItem disablePadding sx={{ mb: 1 }}>
+                        <ListItemButton
+                            onClick={handleCreateClick}
+                            sx={{
+                                borderRadius: 2,
+                                color: '#00E5FF',
+                                bgcolor: 'rgba(0, 229, 255, 0.1)',
+                                '&:hover': {
+                                    bgcolor: 'rgba(0, 229, 255, 0.2)',
+                                },
+                            }}
+                        >
+                            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}><AddCircle /></ListItemIcon>
+                            <ListItemText primary="Create Project" primaryTypographyProps={{ fontWeight: 600 }} />
+                        </ListItemButton>
+                    </ListItem>
+                )}
+
+                {/* Standard Menu Items */}
+                {/* Standard Menu Items */}
+                {currentMenuItems.map((item) => (
                     <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                         <ListItemButton
                             onClick={() => navigate(item.path)}

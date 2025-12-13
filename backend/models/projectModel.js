@@ -35,6 +35,11 @@ const projectSchema = mongoose.Schema(
             enum: ['Planning', 'Active', 'On Hold', 'Completed'],
             default: 'Planning',
         },
+        priority: {
+            type: String,
+            enum: ['Low', 'Medium', 'High'],
+            default: 'Medium',
+        },
         manager: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

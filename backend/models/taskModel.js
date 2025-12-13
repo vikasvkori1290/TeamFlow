@@ -34,6 +34,12 @@ const taskSchema = mongoose.Schema(
         proofUrl: {
             type: String,
         },
+        submissionNotes: {
+            type: String,
+        },
+        duration: {
+            type: Number, // In hours
+        },
     },
     {
         timestamps: true,
