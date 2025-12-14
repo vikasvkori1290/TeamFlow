@@ -34,14 +34,29 @@ export const VoiceChatControls = ({ projectId, isParentActive, onToggle }) => {
                     headers: { Authorization: `Bearer ${storedUser.token}` },
                 });
                 const data = await response.json();
+                if (data.error) {
+                    alert(`Voice Chat Error: ${data.error}`);
+                    return;
+                }
                 if (data.token) {
-                    setAppId(data.appId); // Ensure backend sends appId too, or use env
+                    setAppId(data.appId);
                     setToken(data.token);
                     setChannel(projectId);
                     setReady(true);
                 }
             } catch (error) {
                 console.error("Failed to fetch Agora token", error);
+
+                // Try to debug
+                try {
+                    const debugRes = await fetch(`http://localhost:5000/api/agora/debug`, {
+                        headers: { Authorization: `Bearer ${storedUser.token}` },
+                    });
+                    const debugData = await debugRes.json();
+                    alert(`Connection Failed. Server Status:\nApp ID Found: ${debugData.appIdPresent}\nCert Found: ${debugData.certPresent}`);
+                } catch (debugErr) {
+                    alert("Voice Chat Error: Failed to connect to server completely.");
+                }
             }
         };
         fetchToken();

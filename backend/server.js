@@ -7,6 +7,8 @@ dotenv.config();
 console.log("Loading environment variables...");
 console.log("MONGO_URI:", process.env.MONGO_URI ? "Loaded" : "UNDEFINED");
 console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Loaded" : "UNDEFINED");
+console.log("AGORA_APP_ID:", process.env.AGORA_APP_ID ? "Loaded" : "UNDEFINED");
+console.log("AGORA_APP_CERTIFICATE:", process.env.AGORA_APP_CERTIFICATE ? "Loaded" : "UNDEFINED");
 
 connectDB();
 

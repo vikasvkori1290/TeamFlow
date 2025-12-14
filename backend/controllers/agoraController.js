@@ -36,4 +36,15 @@ const generateToken = (req, res) => {
     }
 };
 
-module.exports = { generateToken };
+const debugEnv = (req, res) => {
+    const appId = process.env.AGORA_APP_ID;
+    const cert = process.env.AGORA_APP_CERTIFICATE;
+    res.json({
+        appIdPresent: !!appId,
+        appIdLength: appId ? appId.length : 0,
+        certPresent: !!cert,
+        certLength: cert ? cert.length : 0
+    });
+};
+
+module.exports = { generateToken, debugEnv };

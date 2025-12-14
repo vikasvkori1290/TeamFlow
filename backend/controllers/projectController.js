@@ -169,8 +169,51 @@ const deleteProject = async (req, res) => {
         await project.deleteOne();
 
         res.status(200).json({ id: req.params.id });
+        await project.deleteOne();
+
+        res.status(200).json({ id: req.params.id });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+// @desc    Notify team members of live session
+// @route   POST /api/projects/:id/notify
+// @access  Private
+const notifyTeam = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+        if (!project) {
+            res.status(404);
+            throw new Error('Project not found');
+        }
+
+        // Get recipients (Manager + Members, excluding sender)
+        const recipients = [project.manager, ...project.members]
+            .filter(id => id.toString() !== req.user.id);
+
+        // Remove duplicates if any
+        const uniqueRecipients = [...new Set(recipients.map(id => id.toString()))];
+
+        if (uniqueRecipients.length === 0) {
+            return res.status(200).json({ message: 'No other members to notify' });
+        }
+
+        const Notification = require('../models/notificationModel');
+
+        const notifications = uniqueRecipients.map(recipientId => ({
+            recipient: recipientId,
+            type: 'live_session',
+            message: `${req.user.name} started a Live Whiteboard session in ${project.name}`,
+            link: `/collab/${project._id}`, // This link will be used by frontend to redirect
+            read: false
+        }));
+
+        await Notification.insertMany(notifications);
+
+        res.status(200).json({ message: `Notified ${uniqueRecipients.length} members` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -180,4 +223,5 @@ module.exports = {
     createProject,
     updateProject,
     deleteProject,
+    notifyTeam
 };
