@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import CreateProjectModal from '../components/CreateProjectModal';
 import EditProjectModal from '../components/EditProjectModal';
+import InviteMemberModal from '../components/InviteMemberModal';
 import { FilterList, Sort, Add, CalendarToday, AccessTime, Search, MoreVert, Dashboard, CheckCircle, Warning, Folder } from '@mui/icons-material';
 
 const Projects = () => {
@@ -13,6 +14,7 @@ const Projects = () => {
     // Modals
     const [openModal, setOpenModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [openInviteModal, setOpenInviteModal] = useState(false);
 
     // UI State
     const [searchQuery, setSearchQuery] = useState('');
@@ -54,7 +56,7 @@ const Projects = () => {
             if (response.ok) {
                 const enrichedData = data.map(p => ({
                     ...p,
-                    progress: p.progress || Math.floor(Math.random() * 100)
+                    progress: p.progress || 0
                 }));
                 // Initial sort handled by effect/render logic
                 setProjects(enrichedData);
@@ -262,6 +264,14 @@ const Projects = () => {
                     </FormControl>
 
                     <Button
+                        variant="outlined"
+                        onClick={() => setOpenInviteModal(true)}
+                        sx={{ color: '#00E5FF', borderColor: '#00E5FF', borderRadius: 2, mr: 2, '&:hover': { borderColor: '#00E5FF', bgcolor: 'rgba(0, 229, 255, 0.1)' } }}
+                    >
+                        Invite Member
+                    </Button>
+
+                    <Button
                         variant="contained"
                         startIcon={<Add />}
                         onClick={() => setOpenModal(true)}
@@ -370,6 +380,7 @@ const Projects = () => {
             </DragDropContext>
 
             <CreateProjectModal open={openModal} onClose={() => setOpenModal(false)} onProjectCreated={fetchProjects} />
+            <InviteMemberModal open={openInviteModal} onClose={() => setOpenInviteModal(false)} />
 
             {/* Edit Modal */}
             <EditProjectModal

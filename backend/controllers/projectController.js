@@ -1,5 +1,6 @@
 const Project = require('../models/projectModel');
 const User = require('../models/userModel');
+const Task = require('../models/taskModel');
 
 // @desc    Get user projects
 // @route   GET /api/projects
@@ -12,7 +13,21 @@ const getProjects = async (req, res) => {
             .populate('manager', 'name email avatar')
             .populate('members', 'name email avatar');
 
-        res.status(200).json(projects);
+        // Aggregate task stats for each project
+        const projectsWithStats = await Promise.all(projects.map(async (project) => {
+            const totalTasks = await Task.countDocuments({ project: project._id });
+            const completedTasks = await Task.countDocuments({ project: project._id, status: 'Done' });
+            const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+            return {
+                ...project.toObject(),
+                totalTasks,
+                completedTasks,
+                progress
+            };
+        }));
+
+        res.status(200).json(projectsWithStats);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -44,7 +59,17 @@ const getProject = async (req, res) => {
             throw new Error('Not authorized to view this project');
         }
 
-        res.status(200).json(project);
+        // Get stats
+        const totalTasks = await Task.countDocuments({ project: project._id });
+        const completedTasks = await Task.countDocuments({ project: project._id, status: 'Done' });
+        const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+        res.status(200).json({
+            ...project.toObject(),
+            totalTasks,
+            completedTasks,
+            progress
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

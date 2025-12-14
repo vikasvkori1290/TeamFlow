@@ -16,6 +16,10 @@ const invitationSchema = mongoose.Schema(
             required: true,
             ref: 'Project',
         },
+        skill: {
+            type: String,
+            required: [true, 'Please specify a skill/role'],
+        },
         status: {
             type: String,
             enum: ['pending', 'accepted', 'rejected'],

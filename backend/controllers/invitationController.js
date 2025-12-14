@@ -1,19 +1,20 @@
 const Invitation = require('../models/invitationModel');
 const Project = require('../models/projectModel');
 const User = require('../models/userModel');
+const Notification = require('../models/notificationModel');
 
 // @desc    Send an invitation
 // @route   POST /api/invitations
 // @access  Private
 const sendInvitation = async (req, res) => {
-    const { recipientEmail, projectId } = req.body;
+    const { recipientEmail, projectId, skill } = req.body;
 
-    if (!recipientEmail || !projectId) {
-        res.status(400).json({ message: 'Please add all fields' });
+    if (!recipientEmail || !projectId || !skill) {
+        res.status(400).json({ message: 'Please add all fields (email, project, skill)' });
         return;
     }
 
-    // Check if project exists and user is owner (or member, depending on rules)
+    // Check if project exists
     const project = await Project.findById(projectId);
     if (!project) {
         res.status(404).json({ message: 'Project not found' });
@@ -36,7 +37,20 @@ const sendInvitation = async (req, res) => {
         sender: req.user.id,
         recipientEmail,
         project: projectId,
+        skill,
     });
+
+    // Notify Recipient if they exist in the system
+    const recipientUser = await User.findOne({ email: recipientEmail });
+
+    if (recipientUser) {
+        await Notification.create({
+            recipient: recipientUser._id,
+            type: 'project_invite',
+            message: `You have been invited to join "${project.name}" as a ${skill}`,
+            link: invitation._id.toString() // Store invitation ID to handle acceptance
+        });
+    }
 
     res.status(201).json(invitation);
 };

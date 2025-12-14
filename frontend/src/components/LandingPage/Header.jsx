@@ -129,6 +129,34 @@ const Header = () => {
         }
     };
 
+    const handleInvitationResponse = async (notification, status) => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const invitationId = notification.link; // We stored inv ID in link
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/invitations/${invitationId}/respond`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${storedUser.token}`
+                },
+                body: JSON.stringify({ status })
+            });
+
+            if (response.ok) {
+                // Mark notification as read and maybe remove it or update text
+                await markAsRead(notification._id);
+                alert(`Invitation ${status}`);
+                // Simple refresh to update projects list if accepted
+                if (status === 'accepted') window.location.reload();
+            } else {
+                alert('Failed to respond to invitation');
+            }
+        } catch (error) {
+            console.error('Error responding to invitation', error);
+        }
+    };
+
     return (
         <StyledAppBar position="fixed">
             <Container maxWidth="lg">
@@ -168,20 +196,44 @@ const Header = () => {
                                         {notifications.length === 0 ? (
                                             <Typography sx={{ p: 2, color: 'text.secondary' }}>No notifications</Typography>
                                         ) : (
-                                            <List>
+                                            <List sx={{ p: 0 }}>
                                                 {notifications.map((notif) => (
                                                     <ListItem
                                                         key={notif._id}
                                                         alignItems="flex-start"
-                                                        button
-                                                        onClick={() => markAsRead(notif._id)}
-                                                        sx={{ bgcolor: notif.read ? 'inherit' : 'rgba(46, 125, 50, 0.08)' }}
+                                                        sx={{
+                                                            bgcolor: notif.read ? 'inherit' : 'rgba(46, 125, 50, 0.08)',
+                                                            flexDirection: 'column'
+                                                        }}
                                                     >
-                                                        <ListItemText
-                                                            primary={notif.message}
-                                                            secondary={new Date(notif.createdAt).toLocaleDateString()}
-                                                        />
-                                                        {!notif.read && <CircleIcon sx={{ fontSize: 10, color: 'primary.main', mt: 1 }} />}
+                                                        <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }} onClick={() => markAsRead(notif._id)}>
+                                                            <ListItemText
+                                                                primary={notif.message}
+                                                                secondary={new Date(notif.createdAt).toLocaleDateString()}
+                                                            />
+                                                            {!notif.read && <CircleIcon sx={{ fontSize: 10, color: 'primary.main', mt: 1 }} />}
+                                                        </Box>
+
+                                                        {notif.type === 'project_invite' && !notif.read && (
+                                                            <Box sx={{ mt: 1, display: 'flex', gap: 1, width: '100%', justifyContent: 'flex-end' }}>
+                                                                <Button
+                                                                    size="small"
+                                                                    variant="outlined"
+                                                                    color="error"
+                                                                    onClick={() => handleInvitationResponse(notif, 'rejected')}
+                                                                >
+                                                                    Reject
+                                                                </Button>
+                                                                <Button
+                                                                    size="small"
+                                                                    variant="contained"
+                                                                    color="primary"
+                                                                    onClick={() => handleInvitationResponse(notif, 'accepted')}
+                                                                >
+                                                                    Accept
+                                                                </Button>
+                                                            </Box>
+                                                        )}
                                                     </ListItem>
                                                 ))}
                                             </List>

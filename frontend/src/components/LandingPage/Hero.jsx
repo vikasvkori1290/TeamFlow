@@ -4,12 +4,16 @@ import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
 
 const HeroSection = styled(Box)({
-    padding: '160px 0 100px', // Extra padding for fixed header
-    background: 'radial-gradient(circle at 50% 50%, #111625 0%, #0B0F19 100%)', // Dark radial
+    padding: '120px 0 100px', // Adjusted for "just below nav bar"
+    background: 'transparent',
     minHeight: '100vh',
     display: 'flex',
-    alignItems: 'center',
+    flexDirection: 'column', // Stack vertically
+    alignItems: 'center',    // Center horizontally
+    justifyContent: 'flex-start', // Start from top
     color: '#fff',
+    position: 'relative',
+    zIndex: 1,
 });
 
 const HeroTitle = styled(Typography)({
@@ -52,17 +56,15 @@ const CTAButton = styled(Button)({
 const Hero = () => {
     return (
         <HeroSection>
-            <Container maxWidth="lg">
-                <Grid container spacing={8} alignItems="center">
-                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                        <HeroTitle variant="h1">
-                            Welcome to TeamFlow
-                        </HeroTitle>
-                        <HeroSubtitle sx={{ mx: 'auto' }}>
-                            Your project management solution.
-                        </HeroSubtitle>
-                    </Grid>
-                </Grid>
+            <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
+                <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+                    <HeroTitle variant="h1">
+                        Welcome to TeamFlow
+                    </HeroTitle>
+                    <HeroSubtitle sx={{ mx: 'auto' }}>
+                        Your project management solution.
+                    </HeroSubtitle>
+                </Box>
             </Container>
         </HeroSection>
     );

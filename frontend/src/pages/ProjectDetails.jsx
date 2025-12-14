@@ -148,6 +148,19 @@ const ProjectDetails = () => {
                         ← Back to Board
                     </Button>
                     <Typography variant="h4" fontWeight="bold">{project?.name || 'Loading...'}</Typography>
+                    {project && (
+                        <Box sx={{ display: 'flex', gap: 3, mt: 1, alignItems: 'center' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Typography variant="h6" color="primary.main" fontWeight="bold" sx={{ mr: 1 }}>{project.progress || 0}%</Typography>
+                                <Typography variant="body2" color="text.secondary">Progress</Typography>
+                            </Box>
+                            <Box sx={{ width: 1, height: 24, bgcolor: 'rgba(255,255,255,0.1)' }} />
+                            <Box>
+                                <Typography variant="body2" color="#fff" fontWeight="bold">{project.completedTasks || 0} / {project.totalTasks || 0}</Typography>
+                                <Typography variant="caption" color="text.secondary">Tasks Done</Typography>
+                            </Box>
+                        </Box>
+                    )}
                 </Box>
                 <Button
                     variant="contained"

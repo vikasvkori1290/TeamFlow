@@ -7,7 +7,7 @@ const DashboardLayout = () => {
     return (
         <Box sx={{ display: 'flex' }}>
             <Sidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: '#0B0F19', minHeight: '100vh', paddingLeft: '280px' }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: '#0B0F19', minHeight: '100vh' }}>
                 <Outlet />
             </Box>
         </Box>
