@@ -16,6 +16,9 @@ const CollabBoard = () => {
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
     const isRemoteUpdate = useRef(false);
 
+    // Member Count
+    const [memberCount, setMemberCount] = useState(0);
+
     // Voice Chat State
     const [voiceActive, setVoiceActive] = useState(false);
     // Initialize Agora Client
@@ -42,7 +45,18 @@ const CollabBoard = () => {
             }
         };
 
+        const handleCount = (count) => {
+            setMemberCount(count);
+        };
+
         socket.on('whiteboard-update', handleUpdate);
+        socket.on('room-count', handleCount);
+
+        return () => {
+            socket.off('whiteboard-update', handleUpdate);
+            socket.off('room-count', handleCount);
+            socket.disconnect();
+        };
 
         return () => {
             socket.off('whiteboard-update', handleUpdate);
@@ -89,6 +103,21 @@ const CollabBoard = () => {
                         </Typography>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        {/* Member Count Badge */}
+                        {!isOffline && (
+                            <div style={{
+                                padding: "4px 10px",
+                                backgroundColor: "rgba(255,255,255,0.1)",
+                                borderRadius: "15px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                                fontSize: "0.8rem"
+                            }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#00E676" }}></span>
+                                {memberCount} Online
+                            </div>
+                        )}
                         {/* Voice Chat Toggle */}
                         {!isOffline && (
                             <>

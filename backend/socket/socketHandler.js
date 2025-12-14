@@ -1,4 +1,4 @@
-module.exports = (io) => {
+const socketHandler = (io) => {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
 
@@ -41,3 +41,5 @@ module.exports = (io) => {
         });
     });
 };
+
+module.exports = socketHandler;

@@ -230,10 +230,23 @@ const ManageProjects = () => {
                             const storedUser = JSON.parse(localStorage.getItem('user'));
                             const selProject = projects.find(p => p._id === selectedProjectId);
                             // Check if current user is manager or creator
-                            const isManager = selProject && storedUser &&
-                                ((selProject.manager?._id === storedUser.id) ||
-                                    (selProject.manager === storedUser.id) ||
-                                    (selProject.createdBy === storedUser.id));
+                            const userId = storedUser?._id || storedUser?.id;
+
+                            if (selProject) {
+                                console.log("--- Permission Debug ---");
+                                console.log("User ID:", userId);
+                                console.log("Manager:", selProject.manager);
+                                console.log("CreatedBy:", selProject.createdBy);
+                                console.log("Manager ID from obj:", selProject.manager?._id);
+                                console.log("Match 1 (manager._id):", selProject.manager?._id === userId);
+                                console.log("Match 2 (manager):", selProject.manager === userId);
+                                console.log("Match 3 (createdBy):", selProject.createdBy === userId);
+                            }
+
+                            const isManager = selProject && userId &&
+                                ((selProject.manager?._id === userId) ||
+                                    (selProject.manager === userId) ||
+                                    (selProject.createdBy === userId));
 
                             if (isManager) {
                                 return [
