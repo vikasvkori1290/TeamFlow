@@ -226,9 +226,25 @@ const ManageProjects = () => {
                         onClose={handleClose}
                         PaperProps={{ sx: { bgcolor: '#1E2538', border: '1px solid rgba(255,255,255,0.1)' } }}
                     >
-                        <MenuItem onClick={() => handleAction('edit')} sx={{ color: '#fff' }}><Edit fontSize="small" sx={{ mr: 1 }} /> Edit Details</MenuItem>
-                        <MenuItem onClick={() => handleAction('archive')} sx={{ color: '#fff' }}><Archive fontSize="small" sx={{ mr: 1 }} /> Archive</MenuItem>
-                        <MenuItem onClick={() => handleAction('delete')} sx={{ color: 'error.main' }}><Delete fontSize="small" sx={{ mr: 1 }} /> Delete</MenuItem>
+                        {(() => {
+                            const storedUser = JSON.parse(localStorage.getItem('user'));
+                            const selProject = projects.find(p => p._id === selectedProjectId);
+                            // Check if current user is manager or creator
+                            const isManager = selProject && storedUser &&
+                                ((selProject.manager?._id === storedUser.id) ||
+                                    (selProject.manager === storedUser.id) ||
+                                    (selProject.createdBy === storedUser.id));
+
+                            if (isManager) {
+                                return [
+                                    <MenuItem key="edit" onClick={() => handleAction('edit')} sx={{ color: '#fff' }}><Edit fontSize="small" sx={{ mr: 1 }} /> Edit Details</MenuItem>,
+                                    <MenuItem key="archive" onClick={() => handleAction('archive')} sx={{ color: '#fff' }}><Archive fontSize="small" sx={{ mr: 1 }} /> Archive</MenuItem>,
+                                    <MenuItem key="delete" onClick={() => handleAction('delete')} sx={{ color: 'error.main' }}><Delete fontSize="small" sx={{ mr: 1 }} /> Delete</MenuItem>
+                                ];
+                            } else {
+                                return <MenuItem onClick={handleClose} sx={{ color: '#fff' }}>View Details Only</MenuItem>;
+                            }
+                        })()}
                     </Menu>
                 </Paper>
             )}

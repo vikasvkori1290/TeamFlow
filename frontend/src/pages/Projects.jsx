@@ -397,9 +397,16 @@ const Projects = () => {
                 onClose={handleMenuClose}
                 PaperProps={{ sx: { bgcolor: '#1E2538', color: '#fff' } }}
             >
-                <MenuItem onClick={handleEditOpen}>Edit Details</MenuItem>
-                <MenuItem onClick={() => navigate(`/manage/${selectedProject?._id}`)}>Manage Members</MenuItem>
-                <MenuItem onClick={handleDeleteProject} sx={{ color: 'error.main' }}>Delete Project</MenuItem>
+                {/* Only show Edit/Delete if user is the manager or creator */}
+                {selectedProject && (user._id === selectedProject.manager?._id || user._id === selectedProject.createdBy) ? (
+                    [
+                        <MenuItem key="edit" onClick={handleEditOpen}>Edit Details</MenuItem>,
+                        <MenuItem key="manage" onClick={() => navigate(`/manage/${selectedProject?._id}`)}>Manage Members</MenuItem>,
+                        <MenuItem key="delete" onClick={handleDeleteProject} sx={{ color: 'error.main' }}>Delete Project</MenuItem>
+                    ]
+                ) : (
+                    <MenuItem onClick={() => navigate(`/project/${selectedProject?._id}`)}>View Details</MenuItem>
+                )}
             </Menu>
         </Box>
     );
