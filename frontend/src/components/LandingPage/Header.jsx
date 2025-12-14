@@ -157,6 +157,14 @@ const Header = () => {
         }
     };
 
+    const handleRestrictedClick = (path) => {
+        if (user) {
+            navigate(path);
+        } else {
+            navigate('/signup');
+        }
+    };
+
     return (
         <StyledAppBar position="fixed">
             <Container maxWidth="lg">
@@ -167,10 +175,12 @@ const Header = () => {
 
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
                         {/* Removed Home, Features, Pricing links per request */}
+                        {/* Tasks and Projects visible to all, but redirect if guest */}
+                        <NavButton onClick={() => handleRestrictedClick('/task')}>Tasks</NavButton>
+                        <NavButton onClick={() => handleRestrictedClick('/projects/board')}>Projects</NavButton>
+
                         {user ? (
                             <>
-                                <NavButton onClick={() => navigate('/task')}>Tasks</NavButton>
-                                <NavButton onClick={() => navigate('/projects/board')}>Projects</NavButton>
 
                                 <IconButton onClick={handleNotifOpen} sx={{ ml: 2, color: '#B0B3C7' }}>
                                     <Badge badgeContent={unreadCount} color="error">
