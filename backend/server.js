@@ -11,6 +11,19 @@ console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Loaded" : "UNDEFINED");
 connectDB();
 
 const app = express();
+const http = require('http');
+const { Server } = require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allow all origins for development
+    methods: ["GET", "POST"]
+  }
+});
+
+// Initialize Socket Handler
+require('./socket/socketHandler')(io);
+
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
@@ -21,11 +34,13 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/invitations', require('./routes/invitationRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/agora', require('./routes/agoraRoutes'));
+app.use('/api/documents', require('./routes/documentRoutes'));
 
 app.get('/', (req, res) => {
   res.send('TeamFlow API is running');
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

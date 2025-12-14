@@ -15,6 +15,7 @@ import TaskManagement from './pages/TaskManagement';
 import AssignTask from './pages/AssignTask';
 import ViewTask from './pages/ViewTask';
 import CompleteTask from './pages/CompleteTask';
+import CollabBoard from './pages/CollabBoard';
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Full Screen Collab Board */}
+          <Route path="/collab/:projectId" element={<CollabBoard />} />
 
           {/* Protected Dashboard Routes */}
           <Route element={<DashboardLayout />}>
