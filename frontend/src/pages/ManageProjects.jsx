@@ -89,11 +89,17 @@ const ManageProjects = () => {
 
         if (action === 'delete') {
             if (!window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
-            await fetch(`http://localhost:5000/api/projects/${selectedProjectId}`, {
+            const response = await fetch(`http://localhost:5000/api/projects/${selectedProjectId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
-            fetchData();
+
+            if (response.ok) {
+                fetchData();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to delete project');
+            }
         } else if (action === 'archive') {
             await fetch(`http://localhost:5000/api/projects/${selectedProjectId}`, {
                 method: 'PUT',

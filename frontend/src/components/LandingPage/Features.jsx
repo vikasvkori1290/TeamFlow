@@ -8,34 +8,50 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Section = styled(Box)({
     padding: '80px 0',
-    backgroundColor: '#fff',
+    background: 'transparent', // Dark theme
+    position: 'relative',
+    zIndex: 2,
 });
 
 const SectionTitle = styled(Typography)({
-    fontWeight: 700,
+    fontWeight: 800,
     textAlign: 'center',
     marginBottom: '60px',
-    color: '#333',
+    color: '#fff', // White text
+    fontSize: '2.5rem',
 });
 
 const FeatureCard = styled(Paper)({
     padding: '30px',
     textAlign: 'center',
-    height: '100%',
-    boxShadow: 'none',
-    border: '1px solid #eee',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    height: '280px', // Strict height
+    width: '100%',
+    maxWidth: '533px', // User requested width
+    margin: '0 auto', // Center in grid cell
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255, 255, 255, 0.03)', // Glass effect
+    backdropFilter: 'blur(10px)',
+    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    borderRadius: '16px',
+    transition: 'all 0.3s ease',
     '&:hover': {
-        transform: 'translateY(-5px)',
-        boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+        transform: 'translateY(-10px)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        borderColor: '#00E5FF',
+        boxShadow: '0 10px 30px rgba(0, 229, 255, 0.2)',
     },
 });
 
 const IconWrapper = styled(Box)({
-    color: '#2E7D32',
+    color: '#00E5FF', // Cyan accent
     marginBottom: '20px',
     '& svg': {
         fontSize: '3rem',
+        filter: 'drop-shadow(0 0 10px rgba(0, 229, 255, 0.5))',
     },
 });
 
@@ -69,9 +85,9 @@ const Features = () => {
                 <SectionTitle variant="h3">
                     Everything you need to manage projects
                 </SectionTitle>
-                <Grid container spacing={4}>
-                    {features.map((feature, index) => (
-                        <Grid item xs={12} md={3} key={index}>
+                <Grid container spacing={4} alignItems="stretch">
+                    {features.map((feature) => (
+                        <Grid item xs={12} sm={6} md={6} lg={6} key={feature.title}>
                             <FeatureCard>
                                 <IconWrapper>{feature.icon}</IconWrapper>
                                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>

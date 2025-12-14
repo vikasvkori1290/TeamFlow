@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Button, Container, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
+import ImageMarquee from './ImageMarquee';
 
 const HeroSection = styled(Box)({
     padding: '120px 0 100px', // Adjusted for "just below nav bar"
@@ -61,6 +62,15 @@ const Hero = () => {
                     <HeroTitle variant="h1">
                         Welcome to TeamFlow
                     </HeroTitle>
+                </Box>
+            </Container>
+
+            <Box sx={{ width: '100%', my: 6, overflow: 'hidden' }}>
+                <ImageMarquee />
+            </Box>
+
+            <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
+                <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
                     <HeroSubtitle sx={{ mx: 'auto' }}>
                         Your project management solution.
                     </HeroSubtitle>

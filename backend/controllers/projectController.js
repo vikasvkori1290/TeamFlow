@@ -158,7 +158,10 @@ const deleteProject = async (req, res) => {
             throw new Error('Project not found');
         }
 
-        if (project.manager.toString() !== req.user.id && project.createdBy.toString() !== req.user.id) {
+        const isManager = project.manager && project.manager.toString() === req.user.id;
+        const isCreator = project.createdBy && project.createdBy.toString() === req.user.id;
+
+        if (!isManager && !isCreator) {
             res.status(401);
             throw new Error('User not authorized');
         }
