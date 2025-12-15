@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Assignment, Person, Cancel, OpenInNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 const CompleteTask = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const CompleteTask = () => {
 
     const fetchReviewTasks = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/tasks/manager-review', {
+            const res = await fetch(`${API_BASE_URL}/api/tasks/manager-review`, {
                 headers: { Authorization: `Bearer ${user.token}` },
             });
             const data = await res.json();
@@ -41,7 +42,7 @@ const CompleteTask = () => {
         const newStatus = decision === 'approve' ? 'Done' : 'In Progress';
 
         try {
-            const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

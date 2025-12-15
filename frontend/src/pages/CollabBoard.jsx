@@ -7,9 +7,10 @@ import { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Lock, LockOpen } from '@mui/icons-material'; // Added Icons
 import { VoiceChatControls } from "../components/VoiceChatControls";
+import API_BASE_URL from '../config';
 
 // Only connect if we are likely to need it, or handle in component
-const socket = io('http://localhost:5000', { autoConnect: false });
+const socket = io(API_BASE_URL, { autoConnect: false });
 
 const CollabBoard = () => {
     const { projectId } = useParams();
@@ -67,7 +68,7 @@ const CollabBoard = () => {
         // Fetch Project Details to check if leader
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (storedUser) {
-            fetch(`http://localhost:5000/api/projects/${projectId}`, {
+            fetch(`${API_BASE_URL}/api/projects/${projectId}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             })
                 .then(res => res.json())
@@ -205,7 +206,7 @@ const CollabBoard = () => {
                                 onClick={async () => {
                                     try {
                                         const storedUser = JSON.parse(localStorage.getItem('user'));
-                                        const res = await fetch(`http://localhost:5000/api/projects/${projectId}/notify`, {
+                                        const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/notify`, {
                                             method: 'POST',
                                             headers: { Authorization: `Bearer ${storedUser.token}` }
                                         });

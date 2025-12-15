@@ -49,7 +49,7 @@ const Projects = () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser) return;
         try {
-            const response = await fetch('http://localhost:5000/api/projects', {
+            const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -78,7 +78,7 @@ const Projects = () => {
 
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            await fetch(`http://localhost:5000/api/projects/${draggableId}`, {
+            await fetch(`${API_BASE_URL}/api/projects/${draggableId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${storedUser.token}` },
                 body: JSON.stringify({ status: newStatus }),
@@ -165,7 +165,7 @@ const Projects = () => {
 
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            await fetch(`http://localhost:5000/api/projects/${selectedProject._id}`, {
+            await fetch(`${API_BASE_URL}/api/projects/${selectedProject._id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             });

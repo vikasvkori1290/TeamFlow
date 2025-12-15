@@ -217,11 +217,52 @@ const notifyTeam = async (req, res) => {
     }
 };
 
+// @desc    Remove member from project (Kick or Leave)
+// @route   PUT /api/projects/:id/remove-member
+// @access  Private
+const removeMember = async (req, res) => {
+    try {
+        const { memberId } = req.body;
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            res.status(404);
+            throw new Error('Project not found');
+        }
+
+        // Check Authorization
+        const isManager = project.manager.toString() === req.user.id;
+        const isSelf = memberId === req.user.id;
+
+        // Allow if Manager OR removing self
+        if (!isManager && !isSelf) {
+            res.status(401);
+            throw new Error('Not authorized to remove this member');
+        }
+
+        // Prevent Manager from removing themselves if they are the only one (optional safety)
+        // Check if member exists in project
+        if (!project.members.includes(memberId)) {
+            res.status(400);
+            throw new Error('Member not found in project');
+        }
+
+        // Remove member
+        project.members = project.members.filter(m => m.toString() !== memberId);
+        await project.save();
+
+        res.status(200).json(project);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getProjects,
     getProject,
     createProject,
     updateProject,
     deleteProject,
-    notifyTeam
+    notifyTeam,
+    removeMember
 };

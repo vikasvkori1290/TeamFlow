@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Container, Typography, Button, Box, Grid, Paper, Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, CircularProgress, Link, Tabs, Tab } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Paper, Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, CircularProgress, Link, Tabs, Tab, IconButton, Tooltip, Chip } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import DescriptionIcon from '@mui/icons-material/Description';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DownloadIcon from '@mui/icons-material/Download';
 import PersonIcon from '@mui/icons-material/Person';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Delete as DeleteIcon, ExitToApp as ExitToAppIcon } from '@mui/icons-material';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import API_BASE_URL from '../config';
 
 const ProjectDetails = () => {
     const { id } = useParams();
@@ -29,7 +31,7 @@ const ProjectDetails = () => {
     const fetchProjectDetails = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -42,7 +44,7 @@ const ProjectDetails = () => {
     const fetchTasks = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -55,7 +57,7 @@ const ProjectDetails = () => {
     const fetchDocuments = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch(`http://localhost:5000/api/documents/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/documents/${id}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -75,7 +77,7 @@ const ProjectDetails = () => {
         formData.append('file', file);
 
         try {
-            const response = await fetch(`http://localhost:5000/api/documents/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/documents/${id}`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${storedUser.token}` },
                 body: formData, // No Content-Type header when sending FormData!
@@ -91,6 +93,41 @@ const ProjectDetails = () => {
             alert("Upload failed");
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleRemoveMember = async (memberId) => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const isSelf = memberId === storedUser._id;
+        const confirmMsg = isSelf ? "Are you sure you want to leave this project?" : "Are you sure you want to remove this member?";
+
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}/remove-member`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${storedUser.token}`
+                },
+                body: JSON.stringify({ memberId })
+            });
+
+            if (response.ok) {
+                if (isSelf) {
+                    alert('You have left the project.');
+                    navigate('/projects/board'); // Redirect to board
+                } else {
+                    alert('Member removed successfully.');
+                    fetchProjectDetails(); // Refresh list
+                }
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to remove member');
+            }
+        } catch (error) {
+            console.error('Error removing member:', error);
+            alert('An error occurred.');
         }
     };
 
@@ -194,7 +231,25 @@ const ProjectDetails = () => {
                     <List dense>
                         {project.members && project.members.length > 0 ? (
                             project.members.map((member) => (
-                                <ListItem key={member._id} sx={{ px: 0 }}>
+                                <ListItem
+                                    key={member._id}
+                                    sx={{ px: 0 }}
+                                    secondaryAction={
+                                        // Show Remove if I am Manager OR if it is Me (Leave)
+                                        (project.manager._id === JSON.parse(localStorage.getItem('user'))._id || member._id === JSON.parse(localStorage.getItem('user'))._id) && (
+                                            <Tooltip title={member._id === JSON.parse(localStorage.getItem('user'))._id ? "Leave Project" : "Remove Member"}>
+                                                <IconButton
+                                                    edge="end"
+                                                    aria-label="delete"
+                                                    onClick={() => handleRemoveMember(member._id)}
+                                                    sx={{ color: member._id === JSON.parse(localStorage.getItem('user'))._id ? '#FF9800' : '#F44336' }}
+                                                >
+                                                    {member._id === JSON.parse(localStorage.getItem('user'))._id ? <ExitToAppIcon /> : <DeleteIcon />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )
+                                    }
+                                >
                                     <ListItemAvatar>
                                         <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.1)' }}>{member.name?.[0]}</Avatar>
                                     </ListItemAvatar>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import API_BASE_URL from '../config';
 
 const style = {
     position: 'absolute',
@@ -32,7 +33,7 @@ const InviteMemberModal = ({ open, onClose }) => {
     const fetchMyProjects = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch('http://localhost:5000/api/projects', {
+            const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -54,7 +55,7 @@ const InviteMemberModal = ({ open, onClose }) => {
     const handleSubmit = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch('http://localhost:5000/api/invitations', {
+            const response = await fetch(`${API_BASE_URL}/api/invitations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

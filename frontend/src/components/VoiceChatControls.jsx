@@ -7,6 +7,8 @@ import {
     useRTCClient
 } from "agora-rtc-react";
 import { Box, Button, Typography, Avatar, Tooltip, Badge } from '@mui/material';
+import { Mic, MicOff, VolumeUp, CallEnd, Group } from '@mui/icons-material';
+import API_BASE_URL from '../config';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import HeadsetIcon from '@mui/icons-material/Headset';
@@ -30,7 +32,7 @@ export const VoiceChatControls = ({ projectId, isParentActive, onToggle }) => {
         const fetchToken = async () => {
             const storedUser = JSON.parse(localStorage.getItem('user'));
             try {
-                const response = await fetch(`http://localhost:5000/api/agora/token?channelName=${projectId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/agora/token?channelName=${projectId}`, {
                     headers: { Authorization: `Bearer ${storedUser.token}` },
                 });
                 const data = await response.json();
@@ -49,7 +51,7 @@ export const VoiceChatControls = ({ projectId, isParentActive, onToggle }) => {
 
                 // Try to debug
                 try {
-                    const debugRes = await fetch(`http://localhost:5000/api/agora/debug`, {
+                    const debugRes = await fetch(`${API_BASE_URL}/api/agora/debug`, {
                         headers: { Authorization: `Bearer ${storedUser.token}` },
                     });
                     const debugData = await debugRes.json();

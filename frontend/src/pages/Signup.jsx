@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Link, Alert } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const Signup = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/users/register', {
+            const response = await fetch(`${API_BASE_URL}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

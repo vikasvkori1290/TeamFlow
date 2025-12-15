@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Box, Typography, List, ListItem, ListItemText, ListItemAvatar, Avatar, CircularProgress, Button } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 const style = {
     position: 'absolute',
@@ -36,7 +37,7 @@ const SelectProjectModal = ({ open, onClose }) => {
         if (!storedUser) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/projects', {
+            const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();

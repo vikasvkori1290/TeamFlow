@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import API_BASE_URL from '../config';
 
 const style = {
     position: 'absolute',
@@ -77,7 +78,7 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
         setError('');
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch('http://localhost:5000/api/projects', {
+            const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -175,13 +176,14 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                     {/* Manager Selection */}
                     <Grid item xs={12}>
                         <Autocomplete
+                            fullWidth
                             options={allUsers}
                             getOptionLabel={(option) => option.name}
                             value={formData.manager}
                             onChange={(event, newValue) => {
                                 setFormData({ ...formData, manager: newValue });
                             }}
-                            renderInput={(params) => <TextField {...params} label="Project Manager" />}
+                            renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth />}
                             renderOption={(props, option) => (
                                 <Box component="li" {...props}>
                                     <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
@@ -195,13 +197,14 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                     <Grid item xs={12}>
                         <Autocomplete
                             multiple
+                            fullWidth
                             options={allUsers}
                             getOptionLabel={(option) => option.name}
                             value={formData.members}
                             onChange={(event, newValue) => {
                                 setFormData({ ...formData, members: newValue });
                             }}
-                            renderInput={(params) => <TextField {...params} label="Team Members" />}
+                            renderInput={(params) => <TextField {...params} label="Team Members" fullWidth />}
                             renderOption={(props, option) => (
                                 <Box component="li" {...props}>
                                     <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>

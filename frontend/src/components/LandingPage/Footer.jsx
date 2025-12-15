@@ -2,21 +2,34 @@ import React from 'react';
 import { Box, Container, Typography, Grid, Link } from '@mui/material';
 import { styled } from '@mui/system';
 
-const FooterSection = styled(Box)({
-    padding: '40px 0 20px',
-    background: 'transparent', // Match Hero section
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)', // Subtle separator
-    marginTop: 'auto',
-});
-
 import { LinkedIn, Instagram, GitHub, Email } from '@mui/icons-material';
 import { IconButton, Stack } from '@mui/material';
+
+const FooterSection = styled(Box)({
+    padding: '40px 0 20px',
+    background: 'transparent',
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    marginTop: 'auto',
+    position: 'relative',
+    zIndex: 10
+});
 
 const Footer = () => {
     return (
         <FooterSection>
             <Container maxWidth="lg">
-                <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ textAlign: 'center' }} id="about-us">
+                    {/* About Us Section */}
+                    <Box sx={{ mb: 6, maxWidth: '800px', mx: 'auto' }}>
+                        <Typography variant="h6" fontWeight="bold" sx={{ color: '#fff', mb: 2 }}>
+                            Built for Builders
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#B0B3C7', lineHeight: 1.8 }}>
+                            At TeamFlow, we are crafting the operating system for high-velocity teams.
+                            Whether you're a lean startup or a global enterprise, we build tools that bridge the gap between
+                            ambition and execution. Our mission is to remove friction, amplify clarity, and let you focus on what matters most—creating.
+                        </Typography>
+                    </Box>
 
                     {/* Social Media & Contact */}
                     <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>

@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { Assignment, CheckCircle, PlayArrow, UploadFile, Close } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 const ViewTask = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const ViewTask = () => {
 
     const fetchMyTasks = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/tasks/my-tasks', {
+            const res = await fetch(`${API_BASE_URL}/api/tasks/my-tasks`, {
                 headers: { Authorization: `Bearer ${user.token}` },
             });
             const data = await res.json();
@@ -38,7 +39,7 @@ const ViewTask = () => {
 
     const handleStartTask = async (task) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/tasks/${task._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ const ViewTask = () => {
         }
 
         try {
-            const res = await fetch(`http://localhost:5000/api/tasks/${selectedTask._id}/submit`, {
+            const res = await fetch(`${API_BASE_URL}/api/tasks/${selectedTask._id}/submit`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

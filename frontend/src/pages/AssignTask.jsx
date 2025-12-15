@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { AddCircle, Folder } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
 const AssignTask = () => {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ const AssignTask = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/projects', {
+                const res = await fetch(`${API_BASE_URL}/api/projects`, {
                     headers: { Authorization: `Bearer ${user.token}` },
                 });
                 const data = await res.json();
@@ -68,7 +69,7 @@ const AssignTask = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/tasks', {
+            const res = await fetch(`${API_BASE_URL}/api/tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

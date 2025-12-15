@@ -17,14 +17,14 @@ const ManageProjectDetails = () => {
     const fetchData = async () => {
         try {
             // Fetch Project Details
-            const projRes = await fetch(`http://localhost:5000/api/projects/${id}`, {
+            const projRes = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             });
             if (projRes.ok) setProject(await projRes.json());
             else navigate('/projects/list'); // Fallback
 
             // Fetch Pending Invitations
-            const invRes = await fetch(`http://localhost:5000/api/invitations/project/${id}`, {
+            const invRes = await fetch(`${API_BASE_URL}/api/invitations/project/${id}`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             });
             if (invRes.ok) setInvitations(await invRes.json());
@@ -40,7 +40,7 @@ const ManageProjectDetails = () => {
 
     const handleInvite = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/invitations', {
+            const res = await fetch(`${API_BASE_URL}/api/invitations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ const ManageProjectDetails = () => {
         if (!confirm('Are you sure you want to remove this member?')) return;
         try {
             const newMembers = project.members.filter(m => m._id !== memberId).map(m => m._id);
-            const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const ManageProjectDetails = () => {
     const handleRevokeInvite = async (invId) => {
         if (!confirm('Revoke this invitation?')) return;
         try {
-            await fetch(`http://localhost:5000/api/invitations/${invId}`, {
+            await fetch(`${API_BASE_URL}/api/invitations/${invId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             });
@@ -95,7 +95,7 @@ const ManageProjectDetails = () => {
     const handleDeleteProject = async () => {
         if (!confirm('Are you sure you want to delete this project? This cannot be undone.')) return;
         try {
-            await fetch(`http://localhost:5000/api/projects/${id}`, {
+            await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${storedUser.token}` }
             });

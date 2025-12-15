@@ -4,6 +4,7 @@ import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { MoreVert as MoreVertIcon, Search as SearchIcon, Edit, Archive, Delete } from '@mui/icons-material';
 import CreateProjectModal from '../components/CreateProjectModal';
+import API_BASE_URL from '../config';
 
 const ManageProjects = () => {
     const [projects, setProjects] = useState([]);
@@ -38,7 +39,7 @@ const ManageProjects = () => {
 
         try {
             // Fetch Projects
-            const projRes = await fetch('http://localhost:5000/api/projects', {
+            const projRes = await fetch(`${API_BASE_URL}/api/projects`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
 
@@ -60,7 +61,7 @@ const ManageProjects = () => {
             }
 
             // Fetch Invitations
-            const invRes = await fetch('http://localhost:5000/api/invitations', {
+            const invRes = await fetch(`${API_BASE_URL}/api/invitations`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             if (invRes.ok) {
@@ -89,7 +90,7 @@ const ManageProjects = () => {
 
         if (action === 'delete') {
             if (!window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
-            const response = await fetch(`http://localhost:5000/api/projects/${selectedProjectId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${selectedProjectId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
@@ -101,7 +102,7 @@ const ManageProjects = () => {
                 alert(data.message || 'Failed to delete project');
             }
         } else if (action === 'archive') {
-            await fetch(`http://localhost:5000/api/projects/${selectedProjectId}`, {
+            await fetch(`${API_BASE_URL}/api/projects/${selectedProjectId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${storedUser.token}` },
                 body: JSON.stringify({ status: 'On Hold' }),
@@ -172,8 +173,15 @@ const ManageProjects = () => {
 
     return (
         <Container maxWidth="xl" sx={{ mt: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h4" fontWeight="bold">Manage Projects</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+                <Box>
+                    <Typography variant="overline" sx={{ color: '#00E5FF', letterSpacing: 2 }}>
+                        WORKSPACE
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: '#fff' }}>
+                        Manage Projects
+                    </Typography>
+                </Box>
                 {/* Search Bar */}
                 <TextField
                     size="small"
@@ -181,8 +189,16 @@ const ManageProjects = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     InputProps={{
-                        startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary' }} /></InputAdornment>,
-                        sx: { bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2, width: 300 }
+                        startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: '#00E5FF' }} /></InputAdornment>,
+                        sx: {
+                            bgcolor: 'rgba(30, 41, 59, 0.5)',
+                            borderRadius: '12px',
+                            width: 320,
+                            color: '#fff',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            '& fieldset': { border: 'none' },
+                            '&:hover': { bgcolor: 'rgba(30, 41, 59, 0.7)' }
+                        }
                     }}
                 />
             </Box>
@@ -195,7 +211,7 @@ const ManageProjects = () => {
             </Box>
 
             {tabValue === 0 && (
-                <Paper sx={{ height: 600, width: '100%', bgcolor: '#111625', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 4 }}>
+                <Paper sx={{ height: 600, width: '100%', background: 'transparent', borderRadius: 4, border: 'none' }} className="glass-panel">
                     <DataGrid
                         rows={filteredProjects}
                         columns={columns}
@@ -207,15 +223,49 @@ const ManageProjects = () => {
                         }}
                         pageSizeOptions={[10, 20]}
                         checkboxSelection
-                        disableRowSelectionOnClick // Fixed prop name from disableSelectionOnClick
+                        disableRowSelectionOnClick
                         onRowClick={(params) => navigate(`/manage/${params.id}`)}
                         sx={{
                             border: 'none',
-                            color: '#B0B3C7',
-                            '& .MuiDataGrid-row:hover': { cursor: 'pointer', bgcolor: 'rgba(255,255,255,0.05)' },
-                            '& .MuiDataGrid-cell': { borderBottom: '1px solid rgba(255,255,255,0.05)' },
-                            '& .MuiDataGrid-columnHeaders': { bgcolor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' },
-                            '& .MuiCheckbox-root': { color: '#555' },
+                            color: '#e2e8f0', // Light slate text
+                            fontFamily: 'Outfit, sans-serif',
+                            '& .MuiDataGrid-row': {
+                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                transition: 'background-color 0.2s ease',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                    cursor: 'pointer'
+                                }
+                            },
+                            '& .MuiDataGrid-cell': {
+                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                display: 'flex',
+                                alignItems: 'center'
+                            },
+                            '& .MuiDataGrid-columnHeaders': {
+                                backgroundColor: 'rgba(15, 23, 42, 0.6)', // Darker header
+                                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                color: '#00E5FF',
+                                fontWeight: 'bold',
+                                fontSize: '0.95rem',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px'
+                            },
+                            '& .MuiDataGrid-columnSeparator': {
+                                display: 'none'
+                            },
+                            '& .MuiCheckbox-root': {
+                                color: 'rgba(255,255,255,0.3)',
+                                '&.Mui-checked': {
+                                    color: '#00E5FF'
+                                }
+                            },
+                            '& .MuiTablePagination-root': {
+                                color: '#B0B3C7'
+                            },
+                            '& .MuiDataGrid-footerContainer': {
+                                borderTop: '1px solid rgba(255,255,255,0.05)'
+                            }
                         }}
                     />
 

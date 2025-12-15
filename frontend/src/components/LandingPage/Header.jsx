@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Notifications as NotificationsIcon, Circle as CircleIcon } from '@mui/icons-material';
 import CreateProjectModal from '../CreateProjectModal';
 import SelectProjectModal from '../SelectProjectModal';
+import API_BASE_URL from '../../config';
 
 const StyledAppBar = styled(AppBar)({
     backgroundColor: '#0B0F19',
@@ -61,7 +62,7 @@ const Header = () => {
     const fetchNotifications = async (currentUser) => {
         if (!currentUser) return;
         try {
-            const response = await fetch('http://localhost:5000/api/notifications', {
+            const response = await fetch(`${API_BASE_URL}/api/notifications`, {
                 headers: { Authorization: `Bearer ${currentUser.token}` },
             });
             const data = await response.json();
@@ -86,7 +87,7 @@ const Header = () => {
     const markAsRead = async (id) => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+            await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
@@ -102,7 +103,7 @@ const Header = () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         const invitationId = notification.link;
         try {
-            const response = await fetch(`http://localhost:5000/api/invitations/${invitationId}/respond`, {
+            const response = await fetch(`${API_BASE_URL}/api/invitations/${invitationId}/respond`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${storedUser.token}` },
                 body: JSON.stringify({ status })
@@ -144,6 +145,12 @@ const Header = () => {
                     </Link>
 
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+                        <NavButton onClick={() => {
+                            const aboutSection = document.getElementById('about-us');
+                            if (aboutSection) {
+                                aboutSection.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }}>About Us</NavButton>
                         <NavButton onClick={() => handleRestrictedClick('/task')}>Tasks</NavButton>
                         <NavButton onClick={() => handleRestrictedClick('/projects/board')}>Projects</NavButton>
                         <NavButton onClick={handleCollabClick}>Collab</NavButton>

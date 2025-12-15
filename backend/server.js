@@ -45,4 +45,19 @@ app.get('/', (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+
+  // KEEP-ALIVE MECHANISM
+  // Prevent Render's free tier from sleeping by pinging self every 10 minutes
+  const INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
+  setInterval(() => {
+    const backendUrl = process.env.BACKEND_URL || `http://localhost:${PORT}`;
+    console.log(`[Keep-Alive] Pinging ${backendUrl} to prevent sleep...`);
+
+    // Use built-in node fetch (v18+) or http/https adapter if using older node.
+    // Assuming Node 18+ which has global fetch, otherwise fallback to http
+    fetch(backendUrl)
+      .then(res => console.log(`[Keep-Alive] Ping successful: ${res.status} ${res.statusText}`))
+      .catch(err => console.error(`[Keep-Alive] Ping failed: ${err.message}`));
+  }, INTERVAL_MS);
 });

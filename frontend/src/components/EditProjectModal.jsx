@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete, Select, FormControl, InputLabel } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import API_BASE_URL from '../config';
 
 const style = {
     position: 'absolute',
@@ -60,7 +61,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
     const fetchUsers = async () => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch('http://localhost:5000/api/users', {
+            const response = await fetch(`${API_BASE_URL}/api/users`, {
                 headers: { Authorization: `Bearer ${storedUser.token}` },
             });
             const data = await response.json();
@@ -86,7 +87,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
         setError('');
         const storedUser = JSON.parse(localStorage.getItem('user'));
         try {
-            const response = await fetch(`http://localhost:5000/api/projects/${project._id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${project._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,6 +208,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                     {/* Manager Selection */}
                     <Grid item xs={12}>
                         <Autocomplete
+                            fullWidth
                             options={allUsers}
                             getOptionLabel={(option) => option.name || ''}
                             value={formData.manager}
@@ -214,7 +216,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                             onChange={(event, newValue) => {
                                 setFormData({ ...formData, manager: newValue });
                             }}
-                            renderInput={(params) => <TextField {...params} label="Project Manager" InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
+                            renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
                             renderOption={(props, option) => (
                                 <Box component="li" {...props}>
                                     <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
@@ -228,6 +230,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                     <Grid item xs={12}>
                         <Autocomplete
                             multiple
+                            fullWidth
                             options={allUsers}
                             getOptionLabel={(option) => option.name || ''}
                             value={formData.members}
@@ -235,7 +238,7 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                             onChange={(event, newValue) => {
                                 setFormData({ ...formData, members: newValue });
                             }}
-                            renderInput={(params) => <TextField {...params} label="Team Members" InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
+                            renderInput={(params) => <TextField {...params} label="Team Members" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
                             renderOption={(props, option) => (
                                 <Box component="li" {...props}>
                                     <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>
