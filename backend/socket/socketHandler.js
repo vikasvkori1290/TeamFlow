@@ -1,4 +1,7 @@
 const socketHandler = (io) => {
+    // Keep track of room states in memory (e.g., { "project-123": { collaborationOpen: false } })
+    const roomStates = {};
+
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
 
@@ -12,7 +15,22 @@ const socketHandler = (io) => {
             const count = room ? room.size : 0;
             io.to(roomName).emit('room-count', count);
 
+            // Send current collaboration state to the joining user
+            const currentState = roomStates[roomName] || { collaborationOpen: false };
+            socket.emit('collaboration-state', currentState.collaborationOpen);
+
             console.log(`Socket ${socket.id} joined room ${roomName} (Count: ${count})`);
+        });
+
+        socket.on('toggle-collaboration', ({ projectId, isOpen }) => {
+            const roomName = `project-${projectId}`;
+            // Update state
+            if (!roomStates[roomName]) roomStates[roomName] = {};
+            roomStates[roomName].collaborationOpen = isOpen;
+
+            // Broadcast to room
+            io.to(roomName).emit('collaboration-state', isOpen);
+            console.log(`Room ${roomName} collaboration set to ${isOpen}`);
         });
 
         socket.on('whiteboard-change', ({ projectId, elements, appState }) => {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, IconButton, Tooltip } from '@mui/material'; // Added IconButton, Tooltip
 import { Excalidraw } from "@excalidraw/excalidraw";
 import io from 'socket.io-client';
 import { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { Lock, LockOpen } from '@mui/icons-material'; // Added Icons
 import { VoiceChatControls } from "../components/VoiceChatControls";
 
 // Only connect if we are likely to need it, or handle in component
@@ -15,6 +16,12 @@ const CollabBoard = () => {
     const navigate = useNavigate();
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
     const isRemoteUpdate = useRef(false);
+
+    // Permissions State
+    const [isLeader, setIsLeader] = useState(false);
+    const [collaborationOpen, setCollaborationOpen] = useState(false);
+
+    // Member Count
 
     // Member Count
     const [memberCount, setMemberCount] = useState(0);
@@ -49,12 +56,36 @@ const CollabBoard = () => {
             setMemberCount(count);
         };
 
+        const handleCollabState = (isOpen) => {
+            setCollaborationOpen(isOpen);
+        };
+
         socket.on('whiteboard-update', handleUpdate);
         socket.on('room-count', handleCount);
+        socket.on('collaboration-state', handleCollabState);
+
+        // Fetch Project Details to check if leader
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            fetch(`http://localhost:5000/api/projects/${projectId}`, {
+                headers: { Authorization: `Bearer ${storedUser.token}` }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const userId = storedUser._id || storedUser.id;
+                    const managerId = data.manager?._id || data.manager;
+                    // Check logic: Manager or Creator is Leader
+                    if (userId === managerId || userId === data.createdBy) {
+                        setIsLeader(true);
+                    }
+                })
+                .catch(console.error);
+        }
 
         return () => {
             socket.off('whiteboard-update', handleUpdate);
             socket.off('room-count', handleCount);
+            socket.off('collaboration-state', handleCollabState);
             socket.disconnect();
         };
 
@@ -99,10 +130,37 @@ const CollabBoard = () => {
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <Button onClick={() => navigate(-1)} style={{ color: "#fff" }}>← Back</Button>
                         <Typography variant="h6">
-                            {isOffline ? "Personal Whiteboard (Offline)" : `TeamFlow Collab: ${projectId}`}
+                            {isOffline ? "Personal Whiteboard" : `TeamFlow: ${projectId}`}
                         </Typography>
                     </div>
+
                     <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        {/* Leader Controls */}
+                        {!isOffline && isLeader && (
+                            <Tooltip title={collaborationOpen ? "Lock Drawing (Leader Only)" : "Unlock Drawing for All"}>
+                                <Button
+                                    variant="contained"
+                                    color={collaborationOpen ? "warning" : "success"}
+                                    size="small"
+                                    startIcon={collaborationOpen ? <LockOpen /> : <Lock />}
+                                    onClick={() => {
+                                        const newState = !collaborationOpen;
+                                        setCollaborationOpen(newState);
+                                        socket.emit('toggle-collaboration', { projectId, isOpen: newState });
+                                    }}
+                                >
+                                    {collaborationOpen ? "Unlocked" : "Locked"}
+                                </Button>
+                            </Tooltip>
+                        )}
+
+                        {/* Status for Non-Leaders */}
+                        {!isOffline && !isLeader && (
+                            <Typography variant="caption" sx={{ color: collaborationOpen ? '#00E676' : '#FF5252', border: '1px solid', borderColor: collaborationOpen ? '#00E676' : '#FF5252', px: 1, borderRadius: 1 }}>
+                                {collaborationOpen ? "Drawing Enabled" : "View Only Mode"}
+                            </Typography>
+                        )}
+
                         {/* Member Count Badge */}
                         {!isOffline && (
                             <div style={{
@@ -182,6 +240,8 @@ const CollabBoard = () => {
                         theme="dark"
                         excalidrawAPI={(api) => setExcalidrawAPI(api)}
                         onChange={onChange}
+                        viewModeEnabled={!isOffline && !isLeader && !collaborationOpen}
+                        gridModeEnabled={true}
                     />
                 </div>
             </div>
