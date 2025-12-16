@@ -136,14 +136,25 @@ const respondToInvitation = async (req, res) => {
     invitation.status = status;
     await invitation.save();
 
+    console.log(`[respondToInvitation] User ${req.user.email} responding ${status} to invitation ${req.params.id}`);
+
     if (status === 'accepted') {
-        // Add user to project members
         const project = await Project.findById(invitation.project);
         if (project) {
-            if (!project.members.includes(req.user.id)) {
+            console.log(`[respondToInvitation] Project found: ${project.name}`);
+            // Check if member exists using string comparison
+            const alreadyMember = project.members.some(memberId => memberId.toString() === req.user.id);
+
+            if (!alreadyMember) {
+                console.log(`[respondToInvitation] Adding user ${req.user.id} to project members`);
                 project.members.push(req.user.id);
                 await project.save();
+                console.log(`[respondToInvitation] Project saved. Members count: ${project.members.length}`);
+            } else {
+                console.log(`[respondToInvitation] User already a member`);
             }
+        } else {
+            console.error(`[respondToInvitation] Project ${invitation.project} not found!`);
         }
     }
 

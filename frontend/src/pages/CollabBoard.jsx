@@ -79,6 +79,15 @@ const CollabBoard = () => {
                     if (userId === managerId || userId === data.createdBy) {
                         setIsLeader(true);
                     }
+
+                    // Load saved board if exists
+                    if (data.whiteboardData && excalidrawAPI) {
+                        excalidrawAPI.updateScene({
+                            elements: data.whiteboardData.elements,
+                            appState: data.whiteboardData.appState
+                        });
+                        console.log("Loaded saved whiteboard data");
+                    }
                 })
                 .catch(console.error);
         }
@@ -200,27 +209,60 @@ const CollabBoard = () => {
                         )}
 
                         {!isOffline && (
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={async () => {
-                                    try {
-                                        const storedUser = JSON.parse(localStorage.getItem('user'));
-                                        const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/notify`, {
-                                            method: 'POST',
-                                            headers: { Authorization: `Bearer ${storedUser.token}` }
-                                        });
-                                        if (res.ok) alert("Team Notified!");
-                                        else alert("Failed to notify");
-                                    } catch (e) {
-                                        console.error(e);
-                                        alert("Error notifying team");
-                                    }
-                                }}
-                                sx={{ color: '#00E5FF', borderColor: 'rgba(0, 229, 255, 0.5)' }}
-                            >
-                                Notify Team 🔔
-                            </Button>
+                            <>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={async () => {
+                                        if (!excalidrawAPI) return;
+                                        const elements = excalidrawAPI.getSceneElements();
+                                        const appState = excalidrawAPI.getAppState();
+                                        const whiteboardData = { elements, appState };
+
+                                        try {
+                                            const storedUser = JSON.parse(localStorage.getItem('user'));
+                                            const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/whiteboard`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    Authorization: `Bearer ${storedUser.token}`
+                                                },
+                                                body: JSON.stringify({ whiteboardData })
+                                            });
+                                            if (res.ok) alert("Board Saved successfully!");
+                                            else alert("Failed to save board");
+                                        } catch (e) {
+                                            console.error(e);
+                                            alert("Error saving board");
+                                        }
+                                    }}
+                                    sx={{ color: '#00E676', borderColor: 'rgba(0, 230, 118, 0.5)', mr: 1 }}
+                                >
+                                    Save Board 💾
+                                </Button>
+
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={async () => {
+                                        try {
+                                            const storedUser = JSON.parse(localStorage.getItem('user'));
+                                            const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/notify`, {
+                                                method: 'POST',
+                                                headers: { Authorization: `Bearer ${storedUser.token}` }
+                                            });
+                                            if (res.ok) alert("Team Notified!");
+                                            else alert("Failed to notify");
+                                        } catch (e) {
+                                            console.error(e);
+                                            alert("Error notifying team");
+                                        }
+                                    }}
+                                    sx={{ color: '#00E5FF', borderColor: 'rgba(0, 229, 255, 0.5)' }}
+                                >
+                                    Notify Team 🔔
+                                </Button>
+                            </>
                         )}
                         <Typography variant="caption" style={{ color: isOffline ? "#FF9800" : "#00E5FF" }}>
                             {isOffline ? "Changes saved locally only" : "Live Sync Active"}

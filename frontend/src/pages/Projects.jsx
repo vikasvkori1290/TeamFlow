@@ -6,6 +6,7 @@ import CreateProjectModal from '../components/CreateProjectModal';
 import EditProjectModal from '../components/EditProjectModal';
 import InviteMemberModal from '../components/InviteMemberModal';
 import { FilterList, Sort, Add, CalendarToday, AccessTime, Search, MoreVert, Dashboard, CheckCircle, Warning, Folder } from '@mui/icons-material';
+import API_BASE_URL from '../config';
 
 const Projects = () => {
     const [user, setUser] = useState(null);
@@ -54,10 +55,12 @@ const Projects = () => {
             });
             const data = await response.json();
             if (response.ok) {
+                console.log("Raw Projects Data from API:", data); // DEBUG
                 const enrichedData = data.map(p => ({
                     ...p,
                     progress: p.progress || 0
                 }));
+                console.log("Enriched Data:", enrichedData); // DEBUG
                 // Initial sort handled by effect/render logic
                 setProjects(enrichedData);
             }
@@ -120,8 +123,12 @@ const Projects = () => {
     const processedProjects = getProcessedProjects();
 
     const getProjectsForColumn = (columnStatus) => {
-        // We still need to respect the column status mainly
-        return processedProjects.filter(p => p.status === columnStatus);
+        // Case-insensitive match and default to 'Planning' if status is missing
+        return processedProjects.filter(p => {
+            const pStatus = (p.status || 'Planning').toLowerCase();
+            const cStatus = columnStatus.toLowerCase();
+            return pStatus === cStatus;
+        });
     };
 
     const getDaysLeft = (dateString) => {

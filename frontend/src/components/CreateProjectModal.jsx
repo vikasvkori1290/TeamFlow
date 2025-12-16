@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete } from '@mui/material';
+import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete, Stack } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import API_BASE_URL from '../config';
 
@@ -111,28 +111,24 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                     <IconButton onClick={onClose}><CloseIcon /></IconButton>
                 </Box>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Project Name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Description"
-                            name="description"
-                            multiline
-                            rows={3}
-                            value={formData.description}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
+                <Stack spacing={3}>
+                    <TextField
+                        fullWidth
+                        label="Project Name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        name="description"
+                        multiline
+                        rows={3}
+                        value={formData.description}
+                        onChange={handleChange}
+                    />
+                    <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -142,8 +138,6 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                             value={formData.startDate}
                             onChange={handleChange}
                         />
-                    </Grid>
-                    <Grid item xs={6}>
                         <TextField
                             fullWidth
                             type="date"
@@ -153,8 +147,9 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                             value={formData.endDate}
                             onChange={handleChange}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </Box>
+
+                    <Box>
                         <Typography variant="subtitle2" gutterBottom>Project Color</Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {colors.map((c) => (
@@ -167,72 +162,68 @@ const CreateProjectModal = ({ open, onClose, onProjectCreated }) => {
                                         borderRadius: '50%',
                                         bgcolor: c,
                                         cursor: 'pointer',
-                                        border: formData.color === c ? '3px solid #333' : '1px solid #ccc',
+                                        border: formData.color === c ? '3px solid #fff' : '1px solid rgba(255,255,255,0.2)',
+                                        boxShadow: formData.color === c ? '0 0 10px rgba(255,255,255,0.5)' : 'none'
                                     }}
                                 />
                             ))}
                         </Box>
-                    </Grid>
+                    </Box>
+
                     {/* Manager Selection */}
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            fullWidth
-                            options={allUsers}
-                            getOptionLabel={(option) => option.name}
-                            value={formData.manager}
-                            onChange={(event, newValue) => {
-                                setFormData({ ...formData, manager: newValue });
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth />}
-                            renderOption={(props, option) => (
-                                <Box component="li" {...props}>
-                                    <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
-                                    {option.name} ({option.email})
-                                </Box>
-                            )}
-                        />
-                    </Grid>
+                    <Autocomplete
+                        fullWidth
+                        options={allUsers}
+                        getOptionLabel={(option) => option.name}
+                        value={formData.manager}
+                        onChange={(event, newValue) => {
+                            setFormData({ ...formData, manager: newValue });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth />}
+                        renderOption={(props, option) => (
+                            <Box component="li" {...props}>
+                                <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
+                                {option.name} ({option.email})
+                            </Box>
+                        )}
+                    />
 
                     {/* Team Members Selection */}
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            multiple
-                            fullWidth
-                            options={allUsers}
-                            getOptionLabel={(option) => option.name}
-                            value={formData.members}
-                            onChange={(event, newValue) => {
-                                setFormData({ ...formData, members: newValue });
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Team Members" fullWidth />}
-                            renderOption={(props, option) => (
-                                <Box component="li" {...props}>
-                                    <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>
-                                    {option.name}
-                                </Box>
-                            )}
-                            renderTags={(value, getTagProps) =>
-                                value.map((option, index) => (
-                                    <Chip
-                                        avatar={<Avatar>{option.name[0]}</Avatar>}
-                                        label={option.name}
-                                        {...getTagProps({ index })}
-                                    />
-                                ))
-                            }
-                        />
-                    </Grid>
+                    <Autocomplete
+                        multiple
+                        fullWidth
+                        options={allUsers}
+                        getOptionLabel={(option) => option.name}
+                        value={formData.members}
+                        onChange={(event, newValue) => {
+                            setFormData({ ...formData, members: newValue });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Team Members" fullWidth />}
+                        renderOption={(props, option) => (
+                            <Box component="li" {...props}>
+                                <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>
+                                {option.name}
+                            </Box>
+                        )}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    avatar={<Avatar>{option.name[0]}</Avatar>}
+                                    label={option.name}
+                                    {...getTagProps({ index })}
+                                />
+                            ))
+                        }
+                    />
+
                     {error && (
-                        <Grid item xs={12}>
-                            <Typography color="error" variant="body2">{error}</Typography>
-                        </Grid>
+                        <Typography color="error" variant="body2">{error}</Typography>
                     )}
-                    <Grid item xs={12}>
-                        <Button variant="contained" fullWidth onClick={handleCreate} disabled={!formData.name || loading}>
-                            {loading ? 'Creating...' : 'Create Project'}
-                        </Button>
-                    </Grid>
-                </Grid>
+
+                    <Button variant="contained" fullWidth onClick={handleCreate} disabled={!formData.name || loading} sx={{ py: 1.5, fontWeight: 'bold' }}>
+                        {loading ? 'Creating...' : 'Create Project'}
+                    </Button>
+                </Stack>
             </Box>
         </Modal>
     );

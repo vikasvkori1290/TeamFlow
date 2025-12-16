@@ -44,6 +44,10 @@ const projectSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
+        whiteboardData: {
+            type: Object, // Stores Excalidraw elements and appState
+            default: null
+        }
     },
     {
         timestamps: true,

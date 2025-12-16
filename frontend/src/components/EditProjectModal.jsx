@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete, Select, FormControl, InputLabel } from '@mui/material';
+import { Modal, Box, Typography, TextField, Button, MenuItem, Grid, IconButton, Avatar, Chip, Autocomplete, Select, FormControl, InputLabel, Stack } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import API_BASE_URL from '../config';
 
@@ -119,32 +119,28 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                     <IconButton onClick={onClose} sx={{ color: '#fff' }}><CloseIcon /></IconButton>
                 </Box>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Project Name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            InputProps={{ style: { color: '#fff' } }}
-                            InputLabelProps={{ style: { color: '#B0B3C7' } }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Description"
-                            name="description"
-                            multiline
-                            rows={3}
-                            value={formData.description}
-                            onChange={handleChange}
-                            InputProps={{ style: { color: '#fff' } }}
-                            InputLabelProps={{ style: { color: '#B0B3C7' } }}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
+                <Stack spacing={3}>
+                    <TextField
+                        fullWidth
+                        label="Project Name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        InputProps={{ style: { color: '#fff' } }}
+                        InputLabelProps={{ style: { color: '#B0B3C7' } }}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        name="description"
+                        multiline
+                        rows={3}
+                        value={formData.description}
+                        onChange={handleChange}
+                        InputProps={{ style: { color: '#fff' } }}
+                        InputLabelProps={{ style: { color: '#B0B3C7' } }}
+                    />
+                    <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -155,8 +151,6 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                             value={formData.startDate}
                             onChange={handleChange}
                         />
-                    </Grid>
-                    <Grid item xs={6}>
                         <TextField
                             fullWidth
                             type="date"
@@ -167,9 +161,9 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                             value={formData.endDate}
                             onChange={handleChange}
                         />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <FormControl fullWidth>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                         <FormControl fullWidth>
                             <InputLabel style={{ color: '#B0B3C7' }}>Priority</InputLabel>
                             <Select
                                 name="priority"
@@ -183,92 +177,84 @@ const EditProjectModal = ({ open, onClose, onProjectUpdated, project }) => {
                                 <MenuItem value="High">High</MenuItem>
                             </Select>
                         </FormControl>
-                    </Grid>
-                    <Grid item xs={6}>
-                        {/* Spacer for color label alignment logic if needed, or put color here */}
-                        <Typography variant="subtitle2" gutterBottom sx={{ color: '#B0B3C7' }}>Theme Color</Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            {colors.slice(0, 5).map((c) => ( // limit visual clutter
-                                <Box
-                                    key={c}
-                                    onClick={() => handleColorSelect(c)}
-                                    sx={{
-                                        width: 32,
-                                        height: 32,
-                                        borderRadius: '50%',
-                                        bgcolor: c,
-                                        cursor: 'pointer',
-                                        border: formData.color === c ? '3px solid #fff' : '1px solid rgba(255,255,255,0.2)',
-                                    }}
-                                />
-                            ))}
+                        <Box sx={{ flex: 1 }}>
+                             <Typography variant="subtitle2" gutterBottom sx={{ color: '#B0B3C7' }}>Theme Color</Typography>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                {colors.slice(0, 5).map((c) => (
+                                    <Box
+                                        key={c}
+                                        onClick={() => handleColorSelect(c)}
+                                        sx={{
+                                            width: 32,
+                                            height: 32,
+                                            borderRadius: '50%',
+                                            bgcolor: c,
+                                            cursor: 'pointer',
+                                            border: formData.color === c ? '3px solid #fff' : '1px solid rgba(255,255,255,0.2)',
+                                        }}
+                                    />
+                                ))}
+                            </Box>
                         </Box>
-                    </Grid>
+                    </Box>
 
                     {/* Manager Selection */}
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            fullWidth
-                            options={allUsers}
-                            getOptionLabel={(option) => option.name || ''}
-                            value={formData.manager}
-                            isOptionEqualToValue={(option, value) => option._id === value._id}
-                            onChange={(event, newValue) => {
-                                setFormData({ ...formData, manager: newValue });
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
-                            renderOption={(props, option) => (
-                                <Box component="li" {...props}>
-                                    <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
-                                    {option.name}
-                                </Box>
-                            )}
-                        />
-                    </Grid>
+                    <Autocomplete
+                        fullWidth
+                        options={allUsers}
+                        getOptionLabel={(option) => option.name || ''}
+                        value={formData.manager}
+                        isOptionEqualToValue={(option, value) => option._id === value._id}
+                        onChange={(event, newValue) => {
+                            setFormData({ ...formData, manager: newValue });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Project Manager" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
+                        renderOption={(props, option) => (
+                            <Box component="li" {...props}>
+                                <Avatar sx={{ width: 24, height: 24, mr: 1, bgcolor: 'primary.main' }}>{option.name[0]}</Avatar>
+                                {option.name}
+                            </Box>
+                        )}
+                    />
 
                     {/* Team Members Selection */}
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            multiple
-                            fullWidth
-                            options={allUsers}
-                            getOptionLabel={(option) => option.name || ''}
-                            value={formData.members}
-                            isOptionEqualToValue={(option, value) => option._id === value._id}
-                            onChange={(event, newValue) => {
-                                setFormData({ ...formData, members: newValue });
-                            }}
-                            renderInput={(params) => <TextField {...params} label="Team Members" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
-                            renderOption={(props, option) => (
-                                <Box component="li" {...props}>
-                                    <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>
-                                    {option.name}
-                                </Box>
-                            )}
-                            renderTags={(value, getTagProps) =>
-                                value.map((option, index) => (
-                                    <Chip
-                                        avatar={<Avatar>{option.name[0]}</Avatar>}
-                                        label={option.name}
-                                        {...getTagProps({ index })}
-                                        sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: '#fff' }}
-                                    />
-                                ))
-                            }
-                        />
-                        {/* Note: Autocomplete creates specific UI issues with complex styling in dark mode sometimes, handling generically. */}
-                    </Grid>
+                    <Autocomplete
+                        multiple
+                        fullWidth
+                        options={allUsers}
+                        getOptionLabel={(option) => option.name || ''}
+                        value={formData.members}
+                        isOptionEqualToValue={(option, value) => option._id === value._id}
+                        onChange={(event, newValue) => {
+                            setFormData({ ...formData, members: newValue });
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Team Members" fullWidth InputLabelProps={{ style: { color: '#B0B3C7' } }} InputProps={{ ...params.InputProps, style: { color: '#fff' } }} />}
+                        renderOption={(props, option) => (
+                            <Box component="li" {...props}>
+                                <Avatar sx={{ width: 24, height: 24, mr: 1 }}>{option.name[0]}</Avatar>
+                                {option.name}
+                            </Box>
+                        )}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    avatar={<Avatar>{option.name[0]}</Avatar>}
+                                    label={option.name}
+                                    {...getTagProps({ index })}
+                                    sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: '#fff' }}
+                                />
+                            ))
+                        }
+                    />
+
                     {error && (
-                        <Grid item xs={12}>
-                            <Typography color="error" variant="body2">{error}</Typography>
-                        </Grid>
+                        <Typography color="error" variant="body2">{error}</Typography>
                     )}
-                    <Grid item xs={12}>
-                        <Button variant="contained" fullWidth onClick={handleUpdate} disabled={!formData.name || loading}>
-                            {loading ? 'Updating...' : 'Update Project'}
-                        </Button>
-                    </Grid>
-                </Grid>
+                    
+                    <Button variant="contained" fullWidth onClick={handleUpdate} disabled={!formData.name || loading}>
+                        {loading ? 'Updating...' : 'Update Project'}
+                    </Button>
+                </Stack>
             </Box>
         </Modal>
     );

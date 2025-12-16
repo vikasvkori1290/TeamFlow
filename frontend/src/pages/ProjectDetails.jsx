@@ -235,19 +235,38 @@ const ProjectDetails = () => {
                                     key={member._id}
                                     sx={{ px: 0 }}
                                     secondaryAction={
-                                        // Show Remove if I am Manager OR if it is Me (Leave)
-                                        (project.manager._id === JSON.parse(localStorage.getItem('user'))._id || member._id === JSON.parse(localStorage.getItem('user'))._id) && (
-                                            <Tooltip title={member._id === JSON.parse(localStorage.getItem('user'))._id ? "Leave Project" : "Remove Member"}>
-                                                <IconButton
-                                                    edge="end"
-                                                    aria-label="delete"
-                                                    onClick={() => handleRemoveMember(member._id)}
-                                                    sx={{ color: member._id === JSON.parse(localStorage.getItem('user'))._id ? '#FF9800' : '#F44336' }}
-                                                >
-                                                    {member._id === JSON.parse(localStorage.getItem('user'))._id ? <ExitToAppIcon /> : <DeleteIcon />}
-                                                </IconButton>
-                                            </Tooltip>
-                                        )
+                                        (() => {
+                                            const currentUser = JSON.parse(localStorage.getItem('user'));
+                                            const currentUserId = currentUser?._id;
+                                            const managerId = project.manager?._id;
+                                            const memberId = member._id;
+
+                                            const isManager = managerId && currentUserId && (managerId.toString() === currentUserId.toString());
+                                            const isSelf = memberId && currentUserId && (memberId.toString() === currentUserId.toString());
+
+                                            // Only show if:
+                                            // 1. I am the Manager (can remove anyone except myself? logic handled in click) -> Manager can remove anyone. 
+                                            // 2. I am the Member (can leave, i.e., remove myself)
+                                            // UI Distinction: Manager Removing Self -> "Leave"?
+
+                                            // Requirements: "only for the team leade"
+                                            // Interpreting as: Manager needs to see the remove button.
+
+                                            if (!isManager && !isSelf) return null;
+
+                                            return (
+                                                <Tooltip title={isSelf ? "Leave Project" : "Remove Member"}>
+                                                    <IconButton
+                                                        edge="end"
+                                                        aria-label="delete"
+                                                        onClick={() => handleRemoveMember(memberId)}
+                                                        sx={{ color: isSelf ? '#FF9800' : '#F44336' }}
+                                                    >
+                                                        {isSelf ? <ExitToAppIcon /> : <DeleteIcon />}
+                                                    </IconButton>
+                                                </Tooltip>
+                                            );
+                                        })()
                                     }
                                 >
                                     <ListItemAvatar>

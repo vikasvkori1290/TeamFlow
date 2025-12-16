@@ -5,13 +5,23 @@ const Task = require('../models/taskModel');
 // @desc    Get user projects
 // @route   GET /api/projects
 // @access  Private
+const mongoose = require('mongoose');
+
+// @desc    Get user projects
+// @route   GET /api/projects
+// @access  Private
 const getProjects = async (req, res) => {
     try {
+        console.log(`[getProjects] Fetching for user: ${req.user.id}`);
+        const userId = new mongoose.Types.ObjectId(req.user.id);
+
         const projects = await Project.find({
-            $or: [{ manager: req.user.id }, { members: req.user.id }, { createdBy: req.user.id }]
+            $or: [{ manager: userId }, { members: userId }, { createdBy: userId }]
         })
             .populate('manager', 'name email avatar')
             .populate('members', 'name email avatar');
+
+        console.log(`[getProjects] Found ${projects.length} projects`);
 
         // Aggregate task stats for each project
         const projectsWithStats = await Promise.all(projects.map(async (project) => {
@@ -111,6 +121,8 @@ const createProject = async (req, res) => {
             members: memberIds,
             createdBy: req.user.id
         });
+
+        console.log(`[createProject] Created project: ${project.name}, Manager: ${projectManager}, Members: ${memberIds.length}`);
 
         res.status(201).json(project);
     } catch (error) {
@@ -257,6 +269,32 @@ const removeMember = async (req, res) => {
     }
 };
 
+const saveWhiteboard = async (req, res) => {
+    try {
+        const { whiteboardData } = req.body;
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            res.status(404);
+            throw new Error('Project not found');
+        }
+
+        // Auth check: Manager or Member can save? 
+        // For now, allow any member to save to enable collaboration persistence
+        if (project.manager.toString() !== req.user.id && !project.members.includes(req.user.id)) {
+            res.status(401);
+            throw new Error('Not authorized to save to this project');
+        }
+
+        project.whiteboardData = whiteboardData;
+        await project.save();
+
+        res.status(200).json({ message: 'Whiteboard saved successfully' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getProjects,
     getProject,
@@ -264,5 +302,6 @@ module.exports = {
     updateProject,
     deleteProject,
     notifyTeam,
-    removeMember
+    removeMember,
+    saveWhiteboard
 };
